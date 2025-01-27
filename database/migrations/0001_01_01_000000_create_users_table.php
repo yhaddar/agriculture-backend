@@ -13,14 +13,14 @@ return new class extends Migration
     {/**
      * table authentication for register and login
      */
-        Schema::create('authentication', function (Blueprint $table) {
+        Schema::create('authentications', function (Blueprint $table) {
             $table->uuid("id")->primary();
             $table->string('full_name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('profile')->default("profile.png");
-            $table->enum("role", ["agricultor", "admin", "superadmin"]);
+            $table->enum("role", ["agricultor", "admin", "superadmin"])->default("agricultor");
             $table->boolean("is_accept_privacy_policy")->default(false);
             $table->rememberToken();
             $table->timestamps();
@@ -33,7 +33,7 @@ return new class extends Migration
             $table->uuid("id")->primary();
             $table->string('email');
             $table->uuid("user_id");
-            $table->foreign("user_id")->references("id")->on("authentication")->onDelete("cascade");
+            $table->foreign("user_id")->references("id")->on("authentications")->onDelete("cascade");
             $table->string('token');
             $table->timestamp('created_at')->nullable();
         });
@@ -47,7 +47,7 @@ return new class extends Migration
             $table->string("token");
             $table->boolean("is_active");
             $table->dateTime("expire_date");
-            $table->foreign("user_id")->references("id")->on("authentication")->onDelete("cascade");
+            $table->foreign("user_id")->references("id")->on("authentications")->onDelete("cascade");
         });
 
         /*
@@ -68,7 +68,7 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->uuid("id")->primary();
             $table->uuid("user_id");
-            $table->foreign("user_id")->references("id")->on("authentication")->onDelete("cascade");
+            $table->foreign("user_id")->references("id")->on("authentications")->onDelete("cascade");
             $table->enum("genre", ["male", "female"]);
             $table->string("city");
             $table->date("date_birth");
@@ -83,7 +83,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('authentications');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
         Schema::dropIfExists("personal_access_token");
