@@ -18,9 +18,9 @@ return new class extends Migration
             $table->uuid("id")->primary();
             $table->enum("services_type", ["BLOGS", "COURSES"]);
             $table->uuid("service_id");
-            $table->foreign("service_id")->references("id")->on("Blogs")->onDelete("cascade");
+            $table->foreign("service_id")->references("id")->on("blogs")->onDelete("cascade");
             $table->uuid("user_id");
-            $table->foreign("user_id")->references("id")->on("users")->onDelete("cascade");
+            $table->foreign("user_id")->references("id")->on("authentications")->onDelete("cascade");
             $table->timestamps();
         });
     }

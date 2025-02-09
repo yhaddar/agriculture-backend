@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\RoleEnum;
 use App\Mail\ResetPasswordEmail;
 use App\Mail\ValidateCompteEmail;
 use App\Models\Authentication;
@@ -14,8 +15,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Laravel\Socialite\Facades\Socialite;
-use Mockery\Exception;
 
 class AuthenticationController extends Controller
 {
@@ -43,7 +44,8 @@ class AuthenticationController extends Controller
             $request->validate([
                 "full_name" => "string|required|max:255",
                 "email" => "email|required|unique:authentications",
-                "password" => "string|min:8"
+                "password" => "string|min:8",
+                "role" => Rule::enum(RoleEnum::class)
             ]);
 
             $full_name = (string)$request["full_name"];
@@ -63,6 +65,7 @@ class AuthenticationController extends Controller
                 $authentication["password"] = Hash::make($password);
                 $authentication["is_accept_privacy_policy"] = $is_accept_privacy_policy;
                 $authentication["type"] = "oauth";
+                $authentication["role"] = $request["role"] === null ? "agricultor" : $request["role"];
                 $authentication->save();
 
                 Mail::to($email)
